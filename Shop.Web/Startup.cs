@@ -31,6 +31,10 @@ namespace Shop.Web
                 cfg.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            services.AddTransient<SeedDb>();
+
+            // cada que me llame un repository me va inyectar la implemen de la clase repository
+            services.AddScoped<IRepository, Repository>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
