@@ -4,6 +4,7 @@ namespace Shop.Web.Helpers
     using Microsoft.AspNetCore.Identity;
     using Data.Entities;
     using System.Threading.Tasks;
+    using Models;
 
     public interface IUserHelper
     {
@@ -11,6 +12,10 @@ namespace Shop.Web.Helpers
         Task<User> GetUserByEmailAsync(string email);
 
         Task<IdentityResult> AddUserAsync(User user, string password);
+
+        Task<SignInResult> LoginAsync(LoginViewModel model);
+
+        Task LogoutAsync();
 
 
     }
