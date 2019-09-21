@@ -1,22 +1,20 @@
 ﻿
 namespace Shop.Web
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    using Data;
+    using Data.Entities;
+    using Helpers;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.HttpsPolicy;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
-    using Data;
-    using Data.Entities;
-    using Helpers;
+    using Microsoft.IdentityModel.Tokens;
+    using Shop.Web.Data.Repositories;
+    using System.Text;
 
     public class Startup
     {
@@ -33,6 +31,8 @@ namespace Shop.Web
 
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
+                cfg.Tokens.AuthenticatorTokenProvider = TokenOptions.DefaultAuthenticatorProvider;
+                cfg.SignIn.RequireConfirmedEmail = true;
                 cfg.User.RequireUniqueEmail = true;
                 cfg.Password.RequireDigit = false;
                 cfg.Password.RequiredUniqueChars = 0;
@@ -41,8 +41,22 @@ namespace Shop.Web
                 cfg.Password.RequireUppercase = false;
                 cfg.Password.RequiredLength = 6;
             })
-             
+                .AddDefaultTokenProviders()
                 .AddEntityFrameworkStores<DataContext>();
+
+
+            services.AddAuthentication()
+                    .AddCookie()
+                    .AddJwtBearer(cfg =>
+                    {
+                        cfg.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidIssuer = this.Configuration["Tokens:Issuer"],
+                            ValidAudience = this.Configuration["Tokens:Audience"],
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                             Encoding.UTF8.GetBytes(this.Configuration["Tokens:Key"]))
+                        };
+                    });
 
 
             services.AddDbContext<DataContext>(cfg =>
@@ -55,13 +69,21 @@ namespace Shop.Web
             // cada que me llame un repository me va inyectar la implemen de la clase repository
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICountryRepository, CountryRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
             services.AddScoped<IUserHelper, UserHelper>();
+            services.AddScoped<IMailHelper, MailHelper>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/NotAuthorized";
+                options.AccessDeniedPath = "/Account/NotAuthorized";
             });
 
 
@@ -81,6 +103,7 @@ namespace Shop.Web
                 app.UseHsts();
             }
 
+            app.UseStatusCodePagesWithReExecute("/error/{0}");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseAuthentication();

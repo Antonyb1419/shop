@@ -2,6 +2,8 @@
 namespace Shop.Web.Data
 {
     using Entities;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using System.Collections.Generic;
     using System.Linq;
 
     public interface IProductRepository : IGenericRepository<Product>
@@ -9,6 +11,7 @@ namespace Shop.Web.Data
         //traeme todos los usuarios
         IQueryable GetAllWithUsers();
 
+        IEnumerable<SelectListItem> GetComboProducts();
     }
 
 }
