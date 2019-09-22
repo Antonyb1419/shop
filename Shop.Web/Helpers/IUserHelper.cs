@@ -5,6 +5,7 @@ namespace Shop.Web.Helpers
     using Data.Entities;
     using System.Threading.Tasks;
     using Models;
+    using System.Collections.Generic;
 
     public interface IUserHelper
     {
@@ -37,6 +38,11 @@ namespace Shop.Web.Helpers
 
         Task<IdentityResult> ResetPasswordAsync(User user, string token, string password);
 
+        Task<List<User>> GetAllUsersAsync();
+
+        Task RemoveUserFromRoleAsync(User user, string roleName);
+
+        Task DeleteUserAsync(User user);
 
     }
 }

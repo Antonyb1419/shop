@@ -14,13 +14,12 @@ namespace Shop.Web.Data
 
         Task<T> GetByIdAsync(int id);
 
-        Task CreateAsync(T entity);
-
-        Task UpdateAsync(T entity);
-
         Task DeleteAsync(T entity);
 
         Task<bool> ExistAsync(int id);
+        Task<T> CreateAsync(T entity);
+
+        Task<T> UpdateAsync(T entity);
 
 
 

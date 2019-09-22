@@ -7,11 +7,15 @@
              x:Class="Shop.UIForms.Views.LoginPage"
              BindingContext="{Binding Main, Source={StaticResource Locator}}"
              Title="Login">
-
+    <ContentPage.Content>
         <ScrollView
             BindingContext="{Binding Login}">
             <StackLayout
                 Padding="8">
+                <Image
+               	HeightRequest="150"
+                Source="Shop">
+                </Image>
                 <Label 
                     Text="Email">
                 </Label>
@@ -28,11 +32,20 @@
                    Placeholder="Enter your pasword..."
                    Text="{Binding Password}">
                 </Entry>
+                <ActivityIndicator
+                	IsRunning="{Binding IsRunning}"
+                    VerticalOptions="CenterAndExpand">
+                </ActivityIndicator>
                 <Button
-                    Command="{Binding LoginCommand}"
-                    Text="Login">
+                	BackgroundColor="Navy"
+                	BorderRadius="23"
+                	Command="{Binding LoginCommand}"
+                	HeightRequest="46"
+                	IsEnabled="{Binding IsEnabled}"
+                	Text="Login"
+                	TextColor="White">
                 </Button>
             </StackLayout>
         </ScrollView>
-
+    </ContentPage.Content>
 </ContentPage>
